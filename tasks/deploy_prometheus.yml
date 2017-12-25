@@ -1,0 +1,19 @@
+---
+- name: prometheus | Generate prometheus configuration
+  template:
+    src: "prometheus.j2"
+    dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' + 'prometheus.yml' }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+    validate: "promtool check config %s"
+  notify:
+  - "Reload prometheus"
+- name: prometheus | Enable prometheus service
+  service:
+    name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
+    state: "started"
+    enabled: "yes"
+  when:
+  - "hostvars[inventory_hostname]['prometheus_enable'] is defined"
+  - "hostvars[inventory_hostname]['prometheus_enable'] == 'true'"

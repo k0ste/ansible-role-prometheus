@@ -1,0 +1,8 @@
+---
+- name: Reload prometheus
+  service:
+    name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
+    state: "reloaded"
+  when:
+  - "hostvars[inventory_hostname]['prometheus_restart'] is defined"
+  - "hostvars[inventory_hostname]['prometheus_restart'] == 'true'"

@@ -1,0 +1,10 @@
+---
+- include: pre_requisite.yml
+- include: packages.yml
+  when:
+  - "hostvars[inventory_hostname]['prometheus_install_package'] is defined"
+  - "hostvars[inventory_hostname]['prometheus_install_package'] == 'true'"
+- include: deploy_prometheus.yml
+  when:
+  - "hostvars[inventory_hostname]['prometheus'] is defined"
+  - "hostvars[inventory_hostname]['prometheus'] != ''"
