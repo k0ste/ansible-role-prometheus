@@ -1,22 +1,18 @@
-ansible-prometheus
-======================
+# ansible-prometheus
 
 Deploy [Prometheus](//prometheus.io/) monitoring system and time series
 database.
 
-Requirements
----------------
+## Requirements
 
-* Ansible 2.2;
+* Ansible 2.4;
 
-Extra
----------
+## Extra
 
 Configuration pass as-is from yaml to pretty yaml with validation via promtool.
 
 
-Example configuration
------------------------
+## Example configuration
 
 ```yaml
 ---

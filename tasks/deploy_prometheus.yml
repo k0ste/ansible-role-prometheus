@@ -2,7 +2,8 @@
 - name: prometheus | Generate prometheus configuration
   template:
     src: "prometheus.j2"
-    dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' + 'prometheus.yml' }}"
+    dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
+              'prometheus.yml' }}"
     owner: "root"
     group: "root"
     mode: "0644"
