@@ -2,3 +2,4 @@
 prometheus_service: 'prometheus'
 prometheus_conf_dest: '/etc/prometheus'
 prometheus_package: 'prometheus'
+prometheus_bin: '/usr/bin/prometheus'

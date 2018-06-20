@@ -1,20 +1,39 @@
 ---
-- name: prometheus | Generate prometheus configuration
+- name: prometheus | Deploy Prometheus configuration
   template:
-    src: "prometheus.j2"
+    src: "prometheus.yml.j2"
     dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
               'prometheus.yml' }}"
     owner: "root"
     group: "root"
     mode: "0644"
     validate: "promtool check config %s"
+  when:
+  - "vars['prometheus_instance_settings'] is defined"
+  - "vars['prometheus_instance_settings'] != []"
   notify:
-  - "Reload prometheus"
+  - "Reload Prometheus"
+- name: prometheus | Deploy Prometheus service configuration
+  template:
+    src: "prometheus.service.j2"
+    dest: "{{ vars['prometheus_systemd_dir'] + '/' +
+              hostvars[inventory_hostname]['prometheus_service'] + '.conf' }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when:
+  - "vars['prometheus_service_settings'] is defined"
+  - "vars['prometheus_service_settings'] != []"
+  notify:
+  - "Restart Prometheus"
 - name: prometheus | Enable prometheus service
-  service:
+  systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
-    state: "started"
     enabled: "yes"
   when:
-  - "hostvars[inventory_hostname]['prometheus_enable'] is defined"
-  - "hostvars[inventory_hostname]['prometheus_enable'] == 'true'"
+  - "hostvars[inventory_hostname]['prometheus'] |
+     json_query(vars['prometheus_enable']) is defined"
+  - "hostvars[inventory_hostname]['prometheus'] |
+     json_query(vars['prometheus_enable']) == 'true'"
+  vars:
+    prometheus_enable: "[] | map(&enable || 'false', @) | [0]"

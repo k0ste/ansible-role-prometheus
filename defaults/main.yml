@@ -1,5 +1,2 @@
 ---
-prometheus_enable: 'true'
-prometheus_restart: 'true'
-prometheus_install_package: 'true'
 prometheus: []
