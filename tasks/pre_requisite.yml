@@ -1,5 +1,6 @@
 ---
-- assert:
+- name: atftpd | Assert that system manager is systemd
+  assert:
     that:
     - "hostvars[inventory_hostname]['ansible_service_mgr'] == 'systemd'"
     msg: "System manager is not systemd."
