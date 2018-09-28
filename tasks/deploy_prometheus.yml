@@ -26,7 +26,7 @@
   - "vars['prometheus_service_settings'] != []"
   notify:
   - "Restart Prometheus"
-- name: prometheus | Enable prometheus service
+- name: prometheus | Enable Prometheus service
   systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     enabled: "yes"
