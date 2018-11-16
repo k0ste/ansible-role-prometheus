@@ -10,7 +10,7 @@
 - name: prometheus | Set facts about prometheus role
   set_fact:
     prometheus_systemd_dir: "{{ '/etc/systemd/system/' +
-      hostvars[inventory_hostname]['prometheus_service'] + '.d' }}"
+      hostvars[inventory_hostname]['prometheus_service'] + '.service.d' }}"
     prometheus_service_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
       json_query('[].options[]') }}"
