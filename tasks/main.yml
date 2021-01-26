@@ -1,16 +1,16 @@
 ---
-- import_tasks: pre_requisite.yml
-- include_tasks: packages.yml
+- import_tasks: "pre_requisite.yml"
+- include_tasks: "packages.yml"
   when:
-  - "hostvars[inventory_hostname]['prometheus'] is defined"
-  - "hostvars[inventory_hostname]['prometheus'] != ''"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_install_package']) is defined"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_install_package']) == 'true'"
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_install_package']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_install_package']) == 'true'"
   vars:
     prometheus_install_package: "[] | map(&install_package || 'false', @) | [0]"
-- include_tasks: deploy_prometheus.yml
+- include_tasks: "deploy_prometheus.yml"
   when:
-  - "hostvars[inventory_hostname]['prometheus'] is defined"
-  - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"

@@ -5,7 +5,7 @@ database.
 
 ## Requirements
 
-* Ansible 2.8+;
+* Ansible 2.10+;
 
 ## Extra
 
@@ -121,4 +121,16 @@ prometheus:
       static_configs:
       - targets:
         - '192.168.1.1:9283'
+  alerts:
+    groups:
+    - name: 'example'
+      rules:
+      - alert: 'DrivePendingSectors'
+        expr: 'sort_desc(netdata_smartd_log_reallocated_sectors_count_sectors_average{instance=~"(example[0-9]+)"}) > 1'
+        for: '1h'
+        labels:
+          severnity: 'warning'
+        annotations:
+          summary: '{% raw %}{{ $labels.instance }} have drive with pending sectors{% endraw %}'
+          description: '{% raw %}Drive {{ $labels.dimension }} on host {{ $labels.instance }} have {{ $value }} pending sectors{% endraw %}'
 ```

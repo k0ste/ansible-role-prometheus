@@ -1,39 +1,53 @@
 ---
+- name: prometheus | Deploy Prometheus Alerts configuration
+  ansible.builtin.template:
+    src: "prometheus_groups.j2"
+    dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
+      'prometheus_groups.yml' }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+    validate: "promtool check rules %s"
+  when:
+    - "vars['prometheus_alerts_settings'] is defined"
+    - "vars['prometheus_alerts_settings'] != ''"
+  notify:
+    - "Reload Prometheus"
 - name: prometheus | Deploy Prometheus configuration
-  template:
+  ansible.builtin.template:
     src: "prometheus.yml.j2"
     dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
-              'prometheus.yml' }}"
+      'prometheus.yml' }}"
     owner: "root"
     group: "root"
     mode: "0644"
     validate: "promtool check config %s"
   when:
-  - "vars['prometheus_instance_settings'] is defined"
-  - "vars['prometheus_instance_settings'] != []"
+    - "vars['prometheus_instance_settings'] is defined"
+    - "vars['prometheus_instance_settings'] != ''"
   notify:
-  - "Reload Prometheus"
+    - "Reload Prometheus"
 - name: prometheus | Deploy Prometheus service configuration
-  template:
+  ansible.builtin.template:
     src: "prometheus.service.j2"
     dest: "{{ vars['prometheus_systemd_dir'] + '/' +
-              hostvars[inventory_hostname]['prometheus_service'] + '.conf' }}"
+      hostvars[inventory_hostname]['prometheus_service'] + '.conf' }}"
     owner: "root"
     group: "root"
     mode: "0644"
   when:
-  - "vars['prometheus_service_settings'] is defined"
-  - "vars['prometheus_service_settings'] != []"
+    - "vars['prometheus_service_settings'] is defined"
+    - "vars['prometheus_service_settings'] != []"
   notify:
-  - "Restart Prometheus"
+    - "Restart Prometheus"
 - name: prometheus | Enable Prometheus service
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     enabled: "yes"
   when:
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_enable']) is defined"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_enable']) == 'true'"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_enable']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_enable']) == 'true'"
   vars:
     prometheus_enable: "[] | map(&enable || 'false', @) | [0]"

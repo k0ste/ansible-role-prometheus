@@ -3,3 +3,9 @@
 {{ '# ' + 'Do not edit manually' }}
 
 {{ vars['prometheus_instance_settings'] | to_nice_yaml }}
+{% if vars['prometheus_alerts_settings'] is defined and
+  vars['prometheus_alerts_settings'] != '' %}
+{{ 'rule_files:\n  - ' +
+  hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
+  'prometheus_groups.yml' }}
+{% endif %}

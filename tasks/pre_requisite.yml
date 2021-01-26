@@ -1,25 +1,28 @@
 ---
 - name: prometheus | Assert that system manager is systemd
-  assert:
+  ansible.builtin.assert:
     that:
-    - "hostvars[inventory_hostname]['ansible_service_mgr'] == 'systemd'"
+      - "hostvars[inventory_hostname]['ansible_service_mgr'] == 'systemd'"
     msg: "System manager is not systemd."
     quiet: "true"
 - name: prometheus | Add the OS specific variables
   include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] +
-                    '.yml' }}"
+    '.yml' }}"
 - name: prometheus | Set facts about prometheus role
-  set_fact:
+  ansible.builtin.set_fact:
     prometheus_systemd_dir: "{{ '/etc/systemd/system/' +
       hostvars[inventory_hostname]['prometheus_service'] + '.service.d' }}"
     prometheus_service_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      json_query('[].options[]') }}"
+      community.general.json_query('[].options[]') }}"
     prometheus_instance_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      json_query('[].settings[] | [0]') }}"
+      community.general.json_query('[].settings[] | [0]') }}"
+    prometheus_alerts_settings: "{{
+      hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query('[].alerts[] | [0]') }}"
 - name: prometheus | Create override systemd service directory
-  file:
+  ansible.builtin.file:
     path: "{{ vars['prometheus_systemd_dir'] }}"
     state: "directory"
     group: "root"

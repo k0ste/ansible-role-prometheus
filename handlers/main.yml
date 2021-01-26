@@ -1,28 +1,28 @@
 ---
 - name: Restart Prometheus
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     daemon_reload: "yes"
     state: "restarted"
   when:
-  - "hostvars[inventory_hostname]['prometheus'] is defined"
-  - "hostvars[inventory_hostname]['prometheus'] != ''"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_restart']) is defined"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_restart']) == 'true'"
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_restart']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_restart']) == 'true'"
   vars:
     prometheus_restart: "[] | map(&restart || 'false', @) | [0]"
 - name: Reload Prometheus
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     state: "reloaded"
   when:
-  - "hostvars[inventory_hostname]['prometheus'] is defined"
-  - "hostvars[inventory_hostname]['prometheus'] != ''"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_restart']) is defined"
-  - "hostvars[inventory_hostname]['prometheus'] |
-     json_query(vars['prometheus_restart']) == 'true'"
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_restart']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_restart']) == 'true'"
   vars:
     prometheus_restart: "[] | map(&restart || 'false', @) | [0]"

@@ -1,0 +1,5 @@
+{{ '## ' + 'prometheus_groups.yml' }}
+{{ '# ' + ansible_managed }}
+{{ '# ' + 'Do not edit manually' }}
+
+{{ vars['prometheus_alerts_settings'] | to_nice_yaml }}
