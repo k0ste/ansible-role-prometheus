@@ -18,9 +18,9 @@
     prometheus_instance_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query('[].settings[] | [0]') }}"
-    prometheus_alerts_settings: "{{
+    prometheus_rules_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query('[].alerts[] | [0]') }}"
+      community.general.json_query('[].rules[] | [0]') }}"
 - name: prometheus | Create override systemd service directory
   ansible.builtin.file:
     path: "{{ vars['prometheus_systemd_dir'] }}"

@@ -1,16 +1,16 @@
 ---
-- name: prometheus | Deploy Prometheus Alerts configuration
+- name: prometheus | Deploy Prometheus rules configuration
   ansible.builtin.template:
     src: "prometheus_groups.j2"
     dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
-      'prometheus_groups.yml' }}"
+      'prometheus_rules.yml' }}"
     owner: "root"
     group: "root"
     mode: "0644"
     validate: "promtool check rules %s"
   when:
-    - "vars['prometheus_alerts_settings'] is defined"
-    - "vars['prometheus_alerts_settings'] != ''"
+    - "vars['prometheus_rules_settings'] is defined"
+    - "vars['prometheus_rules_settings'] != ''"
   notify:
     - "Reload Prometheus"
 - name: prometheus | Deploy Prometheus configuration

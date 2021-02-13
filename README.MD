@@ -116,21 +116,30 @@ prometheus:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - '127.0.0.1:9093'
     scrape_configs:
     - job_name: 'example'
       static_configs:
       - targets:
         - '192.168.1.1:9283'
-  alerts:
+  rules:
     groups:
-    - name: 'example'
-      rules:
-      - alert: 'DrivePendingSectors'
-        expr: 'sort_desc(netdata_smartd_log_reallocated_sectors_count_sectors_average{instance=~"(example[0-9]+)"}) > 1'
-        for: '1h'
-        labels:
-          severnity: 'warning'
-        annotations:
-          summary: '{% raw %}{{ $labels.instance }} have drive with pending sectors{% endraw %}'
-          description: '{% raw %}Drive {{ $labels.dimension }} on host {{ $labels.instance }} have {{ $value }} pending sectors{% endraw %}'
+      - name: 'alert_rules'
+        rules:
+          - alert: 'NetdataSmartdPendingSectors'
+            expr: 'netdata:smartd:current_pending_sector'
+            for: '1h'
+            labels:
+              severnity: 'warning'
+            annotations:
+              summary: '{% raw %}Host {{ $labels.instance }} have drive with pending sectors{% endraw %}'
+              description: '{% raw %}Drive "{{ $labels.dimension }}" on host "{{ $labels.instance }}" have {{ $value }} pending sectors{% endraw %}'
+      - name: 'record_rules'
+        rules:
+          - record: 'netdata:smartd:current_pending_sector'
+            expr: 'netdata_smartd_log_current_pending_sector_count_sectors_average > 1'
 ```
