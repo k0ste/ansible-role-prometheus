@@ -1,0 +1,5 @@
+{{ '## ' + 'alertmanager.yml' }}
+{{ '# ' + ansible_managed }}
+{{ '# ' + 'Do not edit manually' }}
+
+{{ alertmanager_instance_settings | to_nice_yaml }}

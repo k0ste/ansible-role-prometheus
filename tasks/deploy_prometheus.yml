@@ -50,4 +50,4 @@
     - "hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query(vars['prometheus_enable']) == 'true'"
   vars:
-    prometheus_enable: "[] | map(&enable || 'false', @) | [0]"
+    prometheus_enable: "[].enable[] | map(&prometheus || 'false', @) | [0]"

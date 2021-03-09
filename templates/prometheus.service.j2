@@ -12,6 +12,10 @@
 {{ ' \\' }}
 {{ '--config.file=' + o.config_file -}}
 {% endif %}
+{% if o.web_config_file is defined and o.web_config_file != '' %}
+{{ ' \\' }}
+{{ '--web.config.file=' + o.web_config_file -}}
+{% endif %}
 {% if o.web_listen_address is defined and o.web_listen_address != '' %}
 {{ ' \\' }}
 {{ '--web.listen-address=' + o.web_listen_address -}}
@@ -155,7 +159,7 @@
 {{ '--query.max-samples=' ~ o.query_max_samples -}}
 {% endif %}
 {% if o.log_level is defined and
-      o.log_level in ['debug', 'info', 'warn', 'error'] %}
+  o.log_level in ['debug', 'info', 'warn', 'error'] %}
 {{ ' \\' }}
 {{ '--log.level=' + o.log_level -}}
 {% endif %}

@@ -1,16 +1,40 @@
 ---
 - import_tasks: "pre_requisite.yml"
-- include_tasks: "packages.yml"
-  when:
-    - "hostvars[inventory_hostname]['prometheus'] is defined"
-    - "hostvars[inventory_hostname]['prometheus'] != ''"
-    - "hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query(vars['prometheus_install_package']) is defined"
-    - "hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query(vars['prometheus_install_package']) == 'true'"
-  vars:
-    prometheus_install_package: "[] | map(&install_package || 'false', @) | [0]"
-- include_tasks: "deploy_prometheus.yml"
-  when:
-    - "hostvars[inventory_hostname]['prometheus'] is defined"
-    - "hostvars[inventory_hostname]['prometheus'] != ''"
+- name: guest_agent | Install Prometheus package
+  block:
+    - ansible.builtin.set_fact:
+        prometheus_package_name:
+          "{{ hostvars[inventory_hostname]['prometheus_package'] }}"
+    - include_tasks: "packages.yml"
+      when:
+        - "hostvars[inventory_hostname]['prometheus'] is defined"
+        - "hostvars[inventory_hostname]['prometheus'] != ''"
+        - "hostvars[inventory_hostname]['prometheus'] |
+           community.general.json_query(vars['prometheus_install_package'])
+           is defined"
+        - "hostvars[inventory_hostname]['prometheus'] |
+           community.general.json_query(vars['prometheus_install_package']) ==
+           'true'"
+      vars:
+        prometheus_install_package:
+          "[].install_package[] | map(&prometheus || 'false', @) | [0]"
+- name: guest_agent | Install Alertmanager package
+  block:
+    - ansible.builtin.set_fact:
+        prometheus_package_name:
+          "{{ hostvars[inventory_hostname]['alertmanager_package'] }}"
+    - include_tasks: "packages.yml"
+      when:
+        - "hostvars[inventory_hostname]['prometheus'] is defined"
+        - "hostvars[inventory_hostname]['prometheus'] != ''"
+        - "hostvars[inventory_hostname]['prometheus'] |
+           community.general.json_query(vars['alertmanager_install_package']) is
+           defined"
+        - "hostvars[inventory_hostname]['prometheus'] |
+           community.general.json_query(vars['alertmanager_install_package']) ==
+           'true'"
+      vars:
+        alertmanager_install_package:
+          "[].install_package[] | map(&alertmanager || 'false', @) | [0]"
+- import_tasks: "deploy_prometheus.yml"
+- import_tasks: "deploy_alertmanager.yml"

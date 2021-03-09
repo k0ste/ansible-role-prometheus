@@ -12,7 +12,7 @@
     - "hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query(vars['prometheus_restart']) == 'true'"
   vars:
-    prometheus_restart: "[] | map(&restart || 'false', @) | [0]"
+    prometheus_restart: "[].restart[] | map(&prometheus || 'false', @) | [0]"
 - name: Reload Prometheus
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
@@ -25,4 +25,31 @@
     - "hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query(vars['prometheus_restart']) == 'true'"
   vars:
-    prometheus_restart: "[] | map(&restart || 'false', @) | [0]"
+    prometheus_restart: "[].restart[] | map(&prometheus || 'false', @) | [0]"
+- name: Restart Alertmanager
+  ansible.builtin.systemd:
+    name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
+    daemon_reload: "yes"
+    state: "restarted"
+  when:
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_restart']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_restart']) == 'true'"
+  vars:
+    alertmanager_restart: "[].restart[] | map(&alertmanager || 'false', @) | [0]"
+- name: Reload Alertmanager
+  ansible.builtin.systemd:
+    name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
+    state: "reloaded"
+  when:
+    - "hostvars[inventory_hostname]['prometheus'] is defined"
+    - "hostvars[inventory_hostname]['prometheus'] != ''"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_restart']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_restart']) == 'true'"
+  vars:
+    alertmanager_restart: "[].restart[] | map(&alertmanager || 'false', @) | [0]"

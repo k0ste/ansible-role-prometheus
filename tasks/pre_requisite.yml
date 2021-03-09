@@ -14,14 +14,30 @@
       hostvars[inventory_hostname]['prometheus_service'] + '.service.d' }}"
     prometheus_service_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query('[].options[]') }}"
+      community.general.json_query('[].prometheus_options[]') }}"
     prometheus_instance_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query('[].settings[] | [0]') }}"
+      community.general.json_query('[].prometheus_settings[] | [0]') }}"
     prometheus_rules_settings: "{{
       hostvars[inventory_hostname]['prometheus'] |
-      community.general.json_query('[].rules[] | [0]') }}"
-- name: prometheus | Create override systemd service directory
+      community.general.json_query('[].prometheus_rules[] | [0]') }}"
+    prometheus_package_state: "{{ hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query('[].package_state | [0]') }}"
+    alertmanager_systemd_dir: "{{ '/etc/systemd/system/' +
+      hostvars[inventory_hostname]['alertmanager_service'] + '.service.d' }}"
+    alertmanager_service_settings: "{{
+      hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query('[].alertmanager_options[]') }}"
+    alertmanager_instance_settings: "{{
+      hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query('[].alertmanager_settings[] | [0]') }}"
+- name: prometheus | Assert that package state in valid value
+  ansible.builtin.assert:
+    that:
+      - "vars['prometheus_package_state'] in ['present', 'latest']"
+    msg: "'package_state' must be in 'present' or 'latest'."
+    quiet: "true"
+- name: prometheus | Create override systemd prometheus service directory
   ansible.builtin.file:
     path: "{{ vars['prometheus_systemd_dir'] }}"
     state: "directory"
@@ -29,3 +45,17 @@
     owner: "root"
     mode: "0755"
     recurse: "no"
+  when:
+    - "vars['prometheus_service_settings'] is defined"
+    - "vars['prometheus_service_settings'] != []"
+- name: prometheus | Create override systemd alertmanager service directory
+  ansible.builtin.file:
+    path: "{{ vars['alertmanager_systemd_dir'] }}"
+    state: "directory"
+    group: "root"
+    owner: "root"
+    mode: "0755"
+    recurse: "no"
+  when:
+    - "vars['alertmanager_service_settings'] is defined"
+    - "vars['alertmanager_service_settings'] != []"
