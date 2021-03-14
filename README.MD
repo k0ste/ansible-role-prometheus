@@ -20,11 +20,11 @@ Configuration pass as-is from yaml to pretty yaml with validation via
 prometheus:
 # Enable prometheus service or not
 - enable: 'true'
-restart:
+  restart:
 # Restart alertmanager service after deploy or not
-- alertmanager: 'true'
+  - alertmanager: 'true'
 # Restart prometheus service after deploy or not
-  prometheus: 'true'
+    prometheus: 'true'
   install_package:
 # Install prometheus package or not
   - prometheus: 'true'

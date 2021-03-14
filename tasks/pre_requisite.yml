@@ -6,8 +6,8 @@
     msg: "System manager is not systemd."
     quiet: "true"
 - name: prometheus | Add the OS specific variables
-  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] +
-    '.yml' }}"
+  ansible.builtin.include_vars:
+    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
 - name: prometheus | Set facts about prometheus role
   ansible.builtin.set_fact:
     prometheus_systemd_dir: "{{ '/etc/systemd/system/' +
