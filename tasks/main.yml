@@ -1,6 +1,6 @@
 ---
 - import_tasks: "pre_requisite.yml"
-- name: guest_agent | Install Prometheus package
+- name: prometheus | Install Prometheus package
   block:
     - ansible.builtin.set_fact:
         prometheus_package_name:
@@ -18,7 +18,7 @@
       vars:
         prometheus_install_package:
           "[].install_package[] | map(&prometheus || 'false', @) | [0]"
-- name: guest_agent | Install Alertmanager package
+- name: prometheus | Install Alertmanager package
   block:
     - ansible.builtin.set_fact:
         prometheus_package_name:
@@ -37,4 +37,5 @@
         alertmanager_install_package:
           "[].install_package[] | map(&alertmanager || 'false', @) | [0]"
 - import_tasks: "deploy_prometheus.yml"
+- meta: "flush_handlers"
 - import_tasks: "deploy_alertmanager.yml"
