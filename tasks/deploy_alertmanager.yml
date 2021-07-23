@@ -26,6 +26,17 @@
     - "vars['alertmanager_service_settings'] != []"
   notify:
     - "Restart Alertmanager"
+- name: prometheus | Ensure Alertmanager service is started
+  ansible.builtin.systemd:
+    name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
+    state: "started"
+  when:
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_started']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['alertmanager_started']) == 'true'"
+  vars:
+    alertmanager_started: "[].started[] | map(&alertmanager || 'false', @) | [0]"
 - name: prometheus | Enable Alertmanager service
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"

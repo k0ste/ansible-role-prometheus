@@ -40,6 +40,17 @@
     - "vars['prometheus_service_settings'] != []"
   notify:
     - "Restart Prometheus"
+- name: prometheus | Ensure Prometheus service is started
+  ansible.builtin.systemd:
+    name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
+    state: "started"
+  when:
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_started']) is defined"
+    - "hostvars[inventory_hostname]['prometheus'] |
+      community.general.json_query(vars['prometheus_started']) == 'true'"
+  vars:
+    prometheus_started: "[].started[] | map(&prometheus || 'false', @) | [0]"
 - name: prometheus | Enable Prometheus service
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"

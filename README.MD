@@ -18,12 +18,21 @@ Configuration pass as-is from yaml to pretty yaml with validation via
 ```yaml
 ---
 prometheus:
-# Enable prometheus service or not
-- enable: 'true'
-  restart:
-# Restart alertmanager service after deploy or not
+
+- enable:
+# Enable alertmanager service or not
   - alertmanager: 'true'
-# Restart prometheus service after deploy or not
+# Enable prometheus service or not
+    prometheus: 'true'
+  restart:
+# Restart alertmanager service after service override deploy or not
+  - alertmanager: 'true'
+# Restart prometheus service after service override deploy or not
+    prometheus: 'true'
+  reload:
+# Reload alertmanager service after configuration deploy or not
+  - alertmanager: 'true'
+# Reload prometheus service after configuration deploy or not
     prometheus: 'true'
   install_package:
 # Install prometheus package or not
@@ -222,7 +231,7 @@ prometheus:
             expr: 'netdata:smartd:current_pending_sector'
             for: '1h'
             labels:
-              severnity: 'warning'
+              severity: 'warning'
             annotations:
               summary: '{% raw %}Host {{ $labels.instance }} have drive with pending sectors{% endraw %}'
               description: '{% raw %}Drive "{{ $labels.dimension }}" on host "{{ $labels.instance }}" have {{ $value }} pending sectors{% endraw %}'
