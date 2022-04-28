@@ -1,5 +1,5 @@
 ---
-- name: prometheus | Deploy Alertmanager configuration
+- name: "prometheus | Deploy Alertmanager configuration"
   ansible.builtin.template:
     src: "alertmanager.yml.j2"
     dest: "{{ hostvars[inventory_hostname]['alertmanager_conf_dest'] + '/' +
@@ -13,7 +13,7 @@
     - "vars['alertmanager_instance_settings'] != ''"
   notify:
     - "Reload Alertmanager"
-- name: prometheus | Deploy Alertmanager service configuration
+- name: "prometheus | Deploy Alertmanager service configuration"
   ansible.builtin.template:
     src: "alertmanager.service.j2"
     dest: "{{ vars['alertmanager_systemd_dir'] + '/' +
@@ -26,7 +26,7 @@
     - "vars['alertmanager_service_settings'] != []"
   notify:
     - "Restart Alertmanager"
-- name: prometheus | Ensure Alertmanager service is started
+- name: "prometheus | Ensure Alertmanager service is started"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
     state: "started"
@@ -36,8 +36,9 @@
     - "hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query(vars['alertmanager_started']) == 'true'"
   vars:
-    alertmanager_started: "[].started[] | map(&alertmanager || 'false', @) | [0]"
-- name: prometheus | Enable Alertmanager service
+    alertmanager_started:
+      "[].started[] | map(&alertmanager || 'false', @) | [0]"
+- name: "prometheus | Enable Alertmanager service"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
     enabled: "yes"

@@ -1,5 +1,5 @@
 ---
-- name: Restart Prometheus
+- name: "Restart Prometheus"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     daemon_reload: "yes"
@@ -13,7 +13,7 @@
       community.general.json_query(vars['prometheus_restart']) == 'true'"
   vars:
     prometheus_restart: "[].restart[] | map(&prometheus || 'false', @) | [0]"
-- name: Reload Prometheus
+- name: "Reload Prometheus"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     state: "reloaded"
@@ -26,7 +26,7 @@
       community.general.json_query(vars['prometheus_reload']) == 'true'"
   vars:
     prometheus_reload: "[].reload[] | map(&prometheus || 'false', @) | [0]"
-- name: Restart Alertmanager
+- name: "Restart Alertmanager"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
     daemon_reload: "yes"
@@ -39,8 +39,9 @@
     - "hostvars[inventory_hostname]['prometheus'] |
       community.general.json_query(vars['alertmanager_restart']) == 'true'"
   vars:
-    alertmanager_restart: "[].restart[] | map(&alertmanager || 'false', @) | [0]"
-- name: Reload Alertmanager
+    alertmanager_restart:
+      "[].restart[] | map(&alertmanager || 'false', @) | [0]"
+- name: "Reload Alertmanager"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['alertmanager_service'] }}"
     state: "reloaded"

@@ -1,5 +1,5 @@
 ---
-- name: prometheus | Deploy Prometheus rules configuration
+- name: "prometheus | Deploy Prometheus rules configuration"
   ansible.builtin.template:
     src: "prometheus_groups.j2"
     dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
@@ -7,13 +7,16 @@
     owner: "root"
     group: "root"
     mode: "0644"
-    validate: "promtool check rules %s"
+    validate: "{{ 'promtool check rules' }}
+      {%- if vars['prometheus_lint'] is defined and vars['prometheus_lint']
+      in ['all', 'duplicate-rules', 'none'] -%}
+      {{ ' --lint=' + vars['prometheus_lint'] }}{%- endif -%} {{ ' %s' }}"
   when:
     - "vars['prometheus_rules_settings'] is defined"
     - "vars['prometheus_rules_settings'] != ''"
   notify:
     - "Reload Prometheus"
-- name: prometheus | Deploy Prometheus configuration
+- name: "prometheus | Deploy Prometheus configuration"
   ansible.builtin.template:
     src: "prometheus.yml.j2"
     dest: "{{ hostvars[inventory_hostname]['prometheus_conf_dest'] + '/' +
@@ -21,13 +24,16 @@
     owner: "root"
     group: "root"
     mode: "0644"
-    validate: "promtool check config %s"
+    validate: "{{ 'promtool check config' }}
+      {%- if vars['prometheus_lint'] is defined and vars['prometheus_lint']
+      in ['all', 'duplicate-rules', 'none'] -%}
+      {{ ' --lint=' + vars['prometheus_lint'] }}{%- endif -%} {{ ' %s' }}"
   when:
     - "vars['prometheus_instance_settings'] is defined"
     - "vars['prometheus_instance_settings'] != ''"
   notify:
     - "Reload Prometheus"
-- name: prometheus | Deploy Prometheus service configuration
+- name: "prometheus | Deploy Prometheus service configuration"
   ansible.builtin.template:
     src: "prometheus.service.j2"
     dest: "{{ vars['prometheus_systemd_dir'] + '/' +
@@ -40,7 +46,7 @@
     - "vars['prometheus_service_settings'] != []"
   notify:
     - "Restart Prometheus"
-- name: prometheus | Ensure Prometheus service is started
+- name: "prometheus | Ensure Prometheus service is started"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     state: "started"
@@ -51,7 +57,7 @@
       community.general.json_query(vars['prometheus_started']) == 'true'"
   vars:
     prometheus_started: "[].started[] | map(&prometheus || 'false', @) | [0]"
-- name: prometheus | Enable Prometheus service
+- name: "prometheus | Enable Prometheus service"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['prometheus_service'] }}"
     enabled: "yes"

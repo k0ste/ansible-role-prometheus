@@ -1,14 +1,14 @@
 ---
-- name: prometheus | Install the required packages in Redhat derivatives
+- name: "prometheus | Install the required packages in Redhat derivatives"
   block:
-    - name: prometheus | Install the required packages for RedHat via yum
+    - name: "prometheus | Install the required packages for RedHat via yum"
       ansible.builtin.yum:
         name: "{{ vars['prometheus_package_name'] }}"
         state: "{{ vars['prometheus_package_state'] | default(omit) }}"
         update_cache: "yes"
       when:
         - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'yum'"
-    - name: prometheus | Install the required packages for RedHat via dnf
+    - name: "prometheus | Install the required packages for RedHat via dnf"
       ansible.builtin.dnf:
         name: "{{ vars['prometheus_package_name'] }}"
         state: "{{ vars['prometheus_package_state'] | default(omit) }}"
@@ -17,14 +17,14 @@
         - "hostvars[inventory_hostname]['ansible_pkg_mgr'] == 'dnf'"
   when:
     - "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat'"
-- name: prometheus | Install the required packages in Debian derivatives
+- name: "prometheus | Install the required packages in Debian derivatives"
   ansible.builtin.apt:
     name: "{{ vars['prometheus_package_name'] }}"
     state: "{{ vars['prometheus_package_state'] | default(omit) }}"
     update_cache: "yes"
   when:
     - "hostvars[inventory_hostname]['ansible_os_family'] == 'Debian'"
-- name: prometheus | Install the required packages in ArchLinux derivatives
+- name: "prometheus | Install the required packages in ArchLinux derivatives"
   community.general.pacman:
     name: "{{ vars['prometheus_package_name'] }}"
     state: "{{ vars['prometheus_package_state'] | default(omit) }}"

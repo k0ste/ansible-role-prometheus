@@ -18,7 +18,6 @@ Configuration pass as-is from yaml to pretty yaml with validation via
 ```yaml
 ---
 prometheus:
-
 - enable:
 # Enable alertmanager service or not
   - alertmanager: 'true'
@@ -39,6 +38,9 @@ prometheus:
   - prometheus: 'true'
 # Install alertmanager package or not
     alertmanager: 'true'
+# Linting checks to apply. Available options are: 'all', 'duplicate-rules',
+# 'none'. Use 'none' to disable linting
+  lint: 'all'
 # Prometheus startup options
   prometheus_options:
 # Prometheus configuration file path
